@@ -1,0 +1,92 @@
+#!/bin/bash
+# Backend script for Lubuntu Update (does text processing and update installation, can be run as root and must be in order to install updates)
+
+set -e
+export LC_ALL='C'
+
+if [ "$1" = 'pkgver' ]; then
+	shift
+	while [ "$1" != '' ]; do
+		source="$(apt-cache show "$1" | grep 'Source:' | cut -d' ' -f2)"
+		version="$(apt-cache show lubuntu-default-settings | grep Version: | head -n1 | cut -d' ' -f2)"
+		if [ "$source" = '' ]; then
+			echo "$1"
+		else
+			echo "$source"
+		fi
+		echo "$version"
+		shift
+	done
+elif [ "$1" = 'doupdate' ]; then
+	# Prepare to be able to grep through the logs
+	rm /run/lubuntu-update-apt-log || true
+	touch /run/lubuntu-update-apt-log
+	chmod 0600 /run/lubuntu-update-apt-log # prevent non-root from being able to trick the script into deleting arbitrary files later on
+
+	# Repair an interrupted upgrade if necessary
+	dpkg --configure -a
+
+	# Run the real update
+	DEBIAN_FRONTEND='kde' apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' -o Apt::Color='0' -o Dpkg::Use-Pty='0' -y dist-upgrade |& tee /run/lubuntu-update-apt-log
+
+	# Find all the conffiles
+	mapfile conffileRawList <<< "$(grep -P "^Configuration file \'.*\'$" '/run/lubuntu-update-apt-log')"
+	if [ "$(echo "${conffileRawList[0]}" | head -c1)" != 'C' ]; then # Empty or invalid list, we're done
+		exit 0
+	fi
+
+	conffileList=()
+	counter=0
+	while [ "$counter" -lt "${#conffileRawList[@]}" ]; do
+		# Cut off "Configuration file '" from the start and "'" plus a couple trailing characters from the end
+		conffileList[counter]="$(echo "${conffileRawList[$counter]}" | tail -c+21 | head -c-3)"
+		counter=$((counter+1))
+	done
+
+	echo "Lubuntu Update !!! CONFIGURATION FILE LIST START";
+	counter=0
+	while [ "$counter" -lt "${#conffileList[@]}" ]; do
+		echo "${conffileList[$counter]}"
+		counter=$((counter+1))
+	done
+	echo "Lubuntu Update !!! CONFIGURATION FILE LIST END";
+
+	# If we make it this far, there were conffiles to deal with
+	breakLoop='no'
+	gotCommand='no'
+	commandName=''
+	while [ "$breakLoop" = 'no' ]; do
+		read -r inputVal
+		if [ "$gotCommand" = 'no' ]; then
+			if [ "$inputVal" = 'done' ]; then
+				breakLoop='yes'
+			else
+				commandName="$inputVal"
+				gotCommand='yes'
+			fi
+		else
+			if [ "$commandName" = 'replace' ]; then # Replace an existing file
+				counter=0
+				while [ "$counter" -lt "${#conffileList[@]}" ]; do
+					if [ "$inputVal" = "${conffileList[$counter]}" ]; then
+						mv "$inputVal.dpkg-dist" "$inputVal"
+						break
+					fi
+					counter=$((counter+1))
+				done
+			elif [ "$commandName" = 'keep' ]; then # Keep an existing file
+				counter=0
+				while [ "$counter" -lt "${#conffileList[@]}" ]; do
+					if [ "$inputVal" = "${conffileList[$counter]}" ]; then
+						rm "$inputVal.dpkg-dist"
+						break
+					fi
+					counter=$((counter+1))
+				done
+			fi
+			gotCommand='no'
+		fi
+	done
+
+	echo 'Update installation complete.'
+fi
