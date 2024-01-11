@@ -72,8 +72,6 @@ install(TARGETS lubuntu-update
 # no matter where the rest of the program goes.
 install(FILES lubuntu-update-backend DESTINATION /usr/libexec/)
 
-install(FILES lubuntu-update.desktop DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications/)
-
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(lubuntu-update)
 endif()

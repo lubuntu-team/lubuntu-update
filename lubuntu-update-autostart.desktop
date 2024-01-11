@@ -1,0 +1,7 @@
+[Desktop Entry]
+Exec=/usr/bin/lubuntu-update
+NoDisplay=true
+Name=Lubuntu Update Autostart
+Icon=system-software-update
+Type=Application
+Version=0.1

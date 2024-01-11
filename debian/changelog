@@ -1,0 +1,84 @@
+lubuntu-update-notifier (1.0.0~alpha1) noble; urgency=medium
+
+  * Replace the old update notifier with Lubuntu Update.
+  * Change maintainer to Lubuntu Developers.
+  * Update copyright file.
+
+ -- Aaron Rainbolt <arraybolt3@ubuntu.com>  Thu, 11 Jan 2024 03:21:20 +0000
+
+lubuntu-update-notifier (0.6.0) mantic; urgency=medium
+
+  * Add support for release upgrading, when all updates are applied (LP: #2038958).
+
+ -- Simon Quigley <tsimonq2@ubuntu.com>  Tue, 10 Oct 2023 14:06:19 -0500
+
+lubuntu-update-notifier (0.5.4) lunar; urgency=medium
+
+  * Disconnect the status_changed() function from the status-changed signal in
+    repair_install(), as it interferes with upgrade_progress_download().
+    (LP: #2012702)
+  * Don't try to pass a string to QTreeWidgetItem when it expects an
+    Iterable[str]. (LP: #2012823)
+
+ -- Aaron Rainbolt <arraybolt3@ubuntu.com>  Sun, 26 Mar 2023 10:48:15 -0500
+
+lubuntu-update-notifier (0.5.3) lunar; urgency=medium
+
+  * Changed some strings and fixed a typo in the autopkgtest tweak
+
+ -- Aaron Rainbolt <arraybolt3@ubuntu.com>  Thu, 02 Feb 2023 11:45:32 -0600
+
+lubuntu-update-notifier (0.5.2) lunar; urgency=medium
+
+  * Tweaked the autopkgtest script to return more detailed debugging info.
+
+ -- Aaron Rainbolt <arraybolt3@ubuntu.com>  Thu, 02 Feb 2023 10:41:08 -0600
+
+lubuntu-update-notifier (0.5.1) lunar; urgency=medium
+
+  * Added functionality for repairing an interrupted upgrade. (LP: #2002255)
+  * Fixed an assumption in the config-file-conflict frontend.
+  * Bumped version number in lubuntu-upgrader.
+
+ -- Aaron Rainbolt <arraybolt3@ubuntu.com>  Wed, 14 Dec 2022 12:32:48 -0600
+
+lubuntu-update-notifier (0.5) lunar; urgency=medium
+
+  * Add a frontend for config-file-conflict.
+  * Update Standards-version to 4.6.1, no changes needed.
+
+ -- Simon Quigley <tsimonq2@ubuntu.com>  Wed, 07 Dec 2022 13:26:39 -0600
+
+lubuntu-update-notifier (0.4) hirsute; urgency=medium
+
+  * Added internationalization support.
+  * Added packages version and description.
+  * Added security package mark and count.
+
+ -- Hans P Möller <hmollercl@lubuntu.me>  Sun, 14 Feb 2021 21:06:03 -0300
+
+lubuntu-update-notifier (0.3) groovy; urgency=medium
+
+  * Added affected packages info.
+  * Move executables from /usr/lib to /usr/libexec.
+  * Added "Rules-Requires-Root: no" to debian/control.
+
+ -- Hans P Möller <hmollercl@lubuntu.me>  Wed, 19 Aug 2020 10:23:52 -0400
+
+lubuntu-update-notifier (0.2) groovy; urgency=medium
+
+  [ Hans P Möller ]
+  * Change sleep time for notifier from 1 hour to 24.
+  * Added short description in control.
+
+  [ Dan Simmons ]
+  * Drop debian/compat switch to debhlper-compat=13, no changes needed.
+  * Bump standards-version to 4.5.0, no changes needed.
+
+ -- Dan Simmons <kc2bez@lubuntu.me>  Thu, 21 May 2020 19:49:57 -0400
+
+lubuntu-update-notifier (0.1) focal; urgency=medium
+
+  * Initial release. LP: #1840829
+
+ -- Hans P Möller <hmollercl@lubuntu.me>  Thu, 22 Aug 2019 23:23:51 -0400

@@ -1,0 +1,22 @@
+Source: lubuntu-update-notifier
+Section: admin
+Priority: optional
+Maintainer: Lubuntu Developers <lubuntu-devel@lists.ubuntu.com>
+Build-Depends: cmake,
+               debhelper-compat (= 13),
+               lxqt-sudo (>= 1.4.0-0ubuntu2),
+               qtbase5-dev,
+               qttools5-dev
+Standards-Version: 4.6.2
+Rules-Requires-Root: no
+
+Package: lubuntu-update-notifier
+Architecture: any
+Depends: ${misc:Depends},
+         ${shlibs:Depends}
+Description: Lubuntu's update installer
+ Lubuntu Update is an enhanced, modern update installer for the Lubuntu
+ operating system. It is designed to:
+   * Be easy to use,
+   * Look nice, and
+   * Integrate well with the Lubuntu desktop.

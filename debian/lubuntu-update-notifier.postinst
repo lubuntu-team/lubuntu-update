@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set -e
+
+# This file can be removed following the release of Lubuntu 24.04 LTS
+# It's to ensure the old updater files get removed if necessary.
+
+rm -f /etc/xdg/autostart/upg-notifier-autostart.desktop
+rm -f /home/*/.config/autostart/upg-notifier-autostart.desktop
+
+#DEBHELPER#
