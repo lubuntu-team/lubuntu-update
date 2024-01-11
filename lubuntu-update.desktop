@@ -1,0 +1,11 @@
+[Desktop Entry]
+Exec=/usr/bin/lubuntu-update
+Name=Lubuntu Update
+GenericName=Lubuntu Update
+Comment=View available updates and optionally install them
+Icon=system-software-update
+Type=Application
+Version=0.1
+Categories=System;Settings;
+Keywords=upgrade;update
+Terminal=false

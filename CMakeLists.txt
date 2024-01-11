@@ -32,6 +32,8 @@ set(PROJECT_SOURCES
         conffilehandlerdialog.h
         conffilehandlerdialog.cpp
         conffilehandlerdialog.ui
+        ipcfilewatcher.h
+        ipcfilewatcher.cpp
         ${TS_FILES}
 )
 
@@ -59,6 +61,18 @@ install(TARGETS lubuntu-update
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+
+# Yes, we are hardcoding a path here. Yes, it's ugly. However, the program
+# will attempt to run this script as root, and I do NOT want to make it try to
+# "find" the script and execute the first thing it finds that has the right
+# name, that sounds like a security breach waiting to happen. It will only
+# execute lubuntu-update-backend from /usr/libexec, and if something malicious
+# has gotten into /usr/libexec you're compromised anyway, so not much to worry
+# about. Therefore we always, *always* install this script into /usr/libexec/,
+# no matter where the rest of the program goes.
+install(FILES lubuntu-update-backend DESTINATION /usr/libexec/)
+
+install(FILES lubuntu-update.desktop DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications/)
 
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(lubuntu-update)

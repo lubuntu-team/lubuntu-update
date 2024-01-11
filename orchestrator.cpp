@@ -13,7 +13,7 @@ Orchestrator::Orchestrator(QObject *parent)
     trayIcon = new QSystemTrayIcon(); // this is shown to the user to offer updates
 
     connect(checkTimer, &QTimer::timeout, this, &Orchestrator::checkForUpdates);
-    connect(trayIcon, &QSystemTrayIcon::activated, this, [this](){this->displayUpdater(updateInfo);});
+    connect(trayIcon, &QSystemTrayIcon::activated, this, &Orchestrator::displayUpdater);
     connect(&updaterWindow, &MainWindow::updatesInstalled, this, &Orchestrator::handleUpdatesInstalled);
 
     checkTimer->start(21600000); // check four times a day, at least one of those times unattended-upgrades should have refreshed the apt database
@@ -39,9 +39,12 @@ void Orchestrator::checkForUpdates()
     }
 }
 
-void Orchestrator::displayUpdater(QList<QStringList> updateInfo)
+void Orchestrator::displayUpdater()
 {
-    if (!updaterWindow.isVisible()) {
+    if (!updaterWindow.isLockedOpen()) {
+        if (!updaterWindow.isVisible()) {
+            updaterWindow.hide();
+        }
         updaterWindow.setUpdateInfo(updateInfo);
         updaterWindow.show();
     }
@@ -49,5 +52,9 @@ void Orchestrator::displayUpdater(QList<QStringList> updateInfo)
 
 void Orchestrator::handleUpdatesInstalled()
 {
+    // We can't clear the updateInfo list directly as MainWindow::setUpdateInfo requires that it contains five inner lists (even if those lists are all empty).
+    for (int i = 0;i < 5;i++) {
+        updateInfo[i].clear();
+    }
     trayIcon->hide();
 }

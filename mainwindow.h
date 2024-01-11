@@ -21,6 +21,7 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void setUpdateInfo(QList<QStringList> updateInfo);
+    bool isLockedOpen();
 
 signals:
     void updatesInstalled();

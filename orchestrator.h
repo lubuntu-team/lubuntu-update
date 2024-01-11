@@ -15,9 +15,11 @@ class Orchestrator : public QObject
 public:
     explicit Orchestrator(QObject *parent = nullptr);
 
+public slots:
+    void displayUpdater();
+
 private slots:
     void checkForUpdates();
-    void displayUpdater(QList<QStringList> updateInfo);
     void handleUpdatesInstalled();
 
 private:

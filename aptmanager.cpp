@@ -28,7 +28,7 @@ void AptManager::applyFullUpgrade()
     aptProcess = new QProcess();
     aptProcess->setProgram("/usr/bin/lxqt-sudo");
     // Note that the lubuntu-update-backend script sets LC_ALL=C in it already, so we don't need to add that here.
-    aptProcess->setArguments(QStringList() << "/usr/bin/lubuntu-update-backend" << "doupdate");
+    aptProcess->setArguments(QStringList() << "/usr/libexec/lubuntu-update-backend" << "doupdate");
     aptProcess->setProcessChannelMode(QProcess::MergedChannels);
     QObject::connect(aptProcess, &QProcess::readyRead, this, &AptManager::handleProcessBuffer);
     QObject::connect(aptProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, &AptManager::handleProcessBuffer);

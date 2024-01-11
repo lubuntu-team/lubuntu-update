@@ -17,6 +17,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->progressBar->setVisible(false);
     ui->logView->setVisible(false);
 
+    // FIXME: Implement the Details screen and attach this button to it rather than disabling it.
+    ui->detailsButton->setVisible(false);
+
     connect(ui->installButton, &QPushButton::clicked, this, &MainWindow::onInstallButtonClicked);
     connect(ui->closeButton, &QPushButton::clicked, this, &MainWindow::onCloseButtonClicked);
     connect(aptManager, &AptManager::updateComplete, this, &MainWindow::onUpdateCompleted);
@@ -36,11 +39,15 @@ void MainWindow::setUpdateInfo(QList<QStringList> updateInfo)
     // The progress bar and log view are shown after the user chooses to begin installing updates
     ui->progressBar->setVisible(false);
     ui->logView->setVisible(false);
-    ui->installButton->setEnabled(true);
     ui->detailsButton->setEnabled(true);
     ui->closeButton->setEnabled(true);
+    ui->installButton->setEnabled(false); // Correct, it starts out false, we turn it to true if there are any updates.
 
     for (int i = 0;i < 4;i++) {
+        if (updateInfo[i].count() > 0) {
+            ui->installButton->setEnabled(true);
+        }
+
         QTreeWidgetItem *installItem;
         switch (i) {
         case 0:
@@ -67,6 +74,18 @@ void MainWindow::setUpdateInfo(QList<QStringList> updateInfo)
     ui->statLabel->setText(QString("%1 package(s) will be updated. %2 of these updates are security-related.")
       .arg(QString::number(updateInfo[0].count() + updateInfo[1].count() + updateInfo[2].count()),
       QString::number(updateInfo[4].count())));
+}
+
+bool MainWindow::isLockedOpen()
+{
+    /*
+     * If the Close button is disabled, we do NOT want the window to close
+     * under virtually any circumstances. This allows the Orchestrator to
+     * determine whether or not it is save to close and re-open the window
+     * from the outside.
+     */
+
+    return !ui->closeButton->isEnabled();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -99,6 +118,7 @@ void MainWindow::onCloseButtonClicked()
 void MainWindow::onUpdateCompleted()
 {
     ui->closeButton->setEnabled(true);
+    ui->installButton->setEnabled(false);
     ui->progressBar->setVisible(false);
     ui->statLabel->setText("Update installation complete.");
     emit updatesInstalled(); // this tells the orchestrator to hide the tray icon
