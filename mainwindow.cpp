@@ -45,7 +45,9 @@ void MainWindow::setUpdateInfo(QList<QStringList> updateInfo)
 
     bool installEnabled = false;
     for (int i = 0;i < 4;i++) {
-        if (updateInfo[i].count() > 0) {
+        int count = updateInfo[i].count();
+
+        if (count > 0) {
             installEnabled = true;
         }
 
@@ -65,7 +67,7 @@ void MainWindow::setUpdateInfo(QList<QStringList> updateInfo)
             break;
         }
 
-        for (int j = 0;j < updateInfo[i].count();j++) {
+        for (int j = 0;j < count;j++) {
             // TODO: Add security update detection here - security updates should be marked in some way
             installItem->addChild(new QTreeWidgetItem(QStringList() << updateInfo[i][j]));
         }
