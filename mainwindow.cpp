@@ -49,7 +49,7 @@ void MainWindow::setUpdateInfo(QList<QStringList> updateInfo)
 
         if (count > 0) {
             installEnabled = true;
-        }
+        } else { continue; }
 
         QTreeWidgetItem *installItem;
         switch (i) {
