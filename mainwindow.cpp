@@ -43,9 +43,10 @@ void MainWindow::setUpdateInfo(QList<QStringList> updateInfo)
     ui->closeButton->setEnabled(true);
     ui->installButton->setEnabled(false); // Correct, it starts out false, we turn it to true if there are any updates.
 
+    bool installEnabled = false;
     for (int i = 0;i < 4;i++) {
         if (updateInfo[i].count() > 0) {
-            ui->installButton->setEnabled(true);
+            installEnabled = true;
         }
 
         QTreeWidgetItem *installItem;
@@ -74,6 +75,8 @@ void MainWindow::setUpdateInfo(QList<QStringList> updateInfo)
     ui->statLabel->setText(QString("%1 package(s) will be updated. %2 of these updates are security-related.")
       .arg(QString::number(updateInfo[0].count() + updateInfo[1].count() + updateInfo[2].count()),
       QString::number(updateInfo[4].count())));
+
+    ui->installButton->setEnabled(installEnabled);
 }
 
 bool MainWindow::isLockedOpen()
