@@ -22,8 +22,32 @@ Qt Creator is recommended for editing the code. It is present in Ubuntu's offici
 
 ## Missing features
 
-* The Details button is hidden and does nothing. Eventually it should display a list of packages, the old version of them, the new version of them, and a link to their Launchpad page.
+* Double-clicking on a package doesn't show detailed information for it yet.
 * There's no support for release upgrading. This is currently unnecessary as this updater is only going to be shipped in Noble and later, but it will become a big deal in the (potentially near) future.
-* There's no support for doing an `apt update` for checking for recent updates. This seems rather important *now*.
-* Most of the internal strings aren't translatable...
-* ...and the bit of translation support there is, is totally untested and quite possibly not functioning properly. Borrow from what we did with lubuntu-installer-prompt to fix this.
+* The translation support is mostly untested, though it should work.
+
+## Translations
+
+Run the `gen_ts.sh` script after making any code modifications to ensure that the translations files are up-to-date for translators to work on.
+
+To add a new language to be translated:
+
+* Open the `gen_ts.sh` script and add the locale code for the new language to the `langList` array.
+* Run the script after doing this - a new template .ts file will be generated under `src/translations/`.
+* Next, add the new template file to the `TS_FILES` list in `CMakeLists.txt` - it will be named `src/translations/lubuntu-update_locale_CODE.ts`, where `locale_CODE` is the locale code of the added language.
+* Finally, add a line in the src/translations.qrc resource file to include the new translation file. The line should look like `<file alias="locale_CODE">lubuntu-update_locale_CODE.qm</file>`, where `locale_CODE` is the locale code of the added language. This line should go inside the `<qresource>` tag.
+
+For instance, if I were to add Chinese to the list of languages that could be translated into, I would do this:
+
+    vim gen_ts.sh
+    # add this code to the langList array:
+    #    'zh_CN'
+    ./gen_ts.sh
+    vim CMakeLists.txt
+    # add this line to the TS_FILES list:
+    #    src/translations/lubuntu-update_zh_CN.ts
+    vim src/translations.qrc
+    # add this line to the list of file resources:
+    #    <file alias="zh_CN">lubuntu-update_zh_CN.qm</file>
+
+The program will now pick up the added language at build time. Any translations added to the newly created .ts file will be shown to program users who select the new language.

@@ -25,14 +25,17 @@ public:
 
 signals:
     void updatesInstalled();
+    void updatesRefreshed();
 
 protected slots:
     void closeEvent(QCloseEvent *event) override;
 
 private slots:
     void onInstallButtonClicked();
+    void onCheckUpdatesButtonClicked();
     void onCloseButtonClicked();
     void onUpdateCompleted();
+    void onCheckUpdatesCompleted();
     void onProgressUpdate(int progress);
     void onLogLineReady(QString logLine);
     void onConffileListReady(QStringList conffileList);

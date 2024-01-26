@@ -15,6 +15,7 @@ Orchestrator::Orchestrator(QObject *parent)
     connect(checkTimer, &QTimer::timeout, this, &Orchestrator::checkForUpdates);
     connect(trayIcon, &QSystemTrayIcon::activated, this, &Orchestrator::displayUpdater);
     connect(&updaterWindow, &MainWindow::updatesInstalled, this, &Orchestrator::handleUpdatesInstalled);
+    connect(&updaterWindow, &MainWindow::updatesRefreshed, this, &Orchestrator::handleUpdatesRefreshed);
 
     checkTimer->start(21600000); // check four times a day, at least one of those times unattended-upgrades should have refreshed the apt database
 
@@ -34,7 +35,7 @@ void Orchestrator::checkForUpdates()
         trayIcon->show();
         // Yes, we do intentionally use updateInfo[1], then updateInfo[0], then updateInfo[2]. The updateInfo array is populated in a different order than the one we display in.
         trayIcon->showMessage("",
-          QString("Updates available!\n\n%1 to upgrade, %2 to install, and %3 to remove.\n\nClick the tray icon to install the updates.")
+          tr("Updates available!\n\n%1 to upgrade, %2 to install, and %3 to remove.\n\nClick the tray icon to install the updates.")
           .arg(QString::number(updateInfo[1].count()), QString::number(updateInfo[0].count()), QString::number(updateInfo[2].count())));
     }
 }
@@ -57,4 +58,10 @@ void Orchestrator::handleUpdatesInstalled()
         updateInfo[i].clear();
     }
     trayIcon->hide();
+}
+
+void Orchestrator::handleUpdatesRefreshed()
+{
+    checkForUpdates();
+    displayUpdater();
 }

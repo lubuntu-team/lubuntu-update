@@ -12,47 +12,50 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets LinguistTools)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets LinguistTools)
 
-set(TS_FILES translations/lubuntu-update_en_US.ts)
+set(TS_FILES
+	src/translations/lubuntu-update_en_US.ts
+	src/translations/lubuntu-update_es_ES.ts
+	src/translations/lubuntu-update_zh_CN.ts
+)
 
 set(PROJECT_SOURCES
-        main.cpp
-        mainwindow.cpp
-        mainwindow.h
-        mainwindow.ui
-        orchestrator.h
-        orchestrator.cpp
-        aptmanager.h
-        aptmanager.cpp
-        conffilewidget.h
-        conffilewidget.cpp
-        conffilewidget.ui
-        diffdisplaydialog.h
-        diffdisplaydialog.cpp
-        diffdisplaydialog.ui
-        conffilehandlerdialog.h
-        conffilehandlerdialog.cpp
-        conffilehandlerdialog.ui
-        ipcfilewatcher.h
-        ipcfilewatcher.cpp
+        src/main.cpp
+        src/mainwindow.cpp
+        src/mainwindow.h
+        src/mainwindow.ui
+        src/orchestrator.h
+        src/orchestrator.cpp
+        src/aptmanager.h
+        src/aptmanager.cpp
+        src/conffilewidget.h
+        src/conffilewidget.cpp
+        src/conffilewidget.ui
+        src/diffdisplaydialog.h
+        src/diffdisplaydialog.cpp
+        src/diffdisplaydialog.ui
+        src/conffilehandlerdialog.h
+        src/conffilehandlerdialog.cpp
+        src/conffilehandlerdialog.ui
+        src/ipcfilewatcher.h
+        src/ipcfilewatcher.cpp
         ${TS_FILES}
 )
 
-if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(lubuntu-update
-        MANUAL_FINALIZATION
-        ${PROJECT_SOURCES}
-        resources.qrc
-    )
+set(TRANSLATION_RESOURCES "src/translations.qrc")
 
-    qt_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
-else()
-    add_executable(lubuntu-update
-        ${PROJECT_SOURCES}
-        resources.qrc
-    )
+configure_file(${TRANSLATION_RESOURCES} translations.qrc COPYONLY)
+qt5_add_translation(QM_FILES ${TS_FILES})
+qt5_add_resources(QM_RESOURCES ${CMAKE_CURRENT_BINARY_DIR}/translations.qrc)
 
-    qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
-endif()
+add_custom_target(translations ALL DEPENDS ${QM_FILES})
+
+add_executable(lubuntu-update
+    ${PROJECT_SOURCES}
+    ${QM_RESOURCES}
+    src/resources.qrc
+)
+
+add_dependencies(lubuntu-update translations)
 
 target_link_libraries(lubuntu-update PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 
@@ -70,8 +73,6 @@ install(TARGETS lubuntu-update
 # has gotten into /usr/libexec you're compromised anyway, so not much to worry
 # about. Therefore we always, *always* install this script into /usr/libexec/,
 # no matter where the rest of the program goes.
-install(FILES lubuntu-update-backend DESTINATION /usr/libexec/)
+install(FILES src/lubuntu-update-backend DESTINATION /usr/libexec/)
 
-if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(lubuntu-update)
-endif()
+install(FILES lubuntu-update.desktop DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications/)

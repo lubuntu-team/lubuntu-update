@@ -4,8 +4,6 @@
 
 #include <QProcess>
 
-#include <QDebug>
-
 ConffileWidget::ConffileWidget(QString filename, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::ConffileWidget)

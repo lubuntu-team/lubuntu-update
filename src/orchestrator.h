@@ -21,6 +21,7 @@ public slots:
 private slots:
     void checkForUpdates();
     void handleUpdatesInstalled();
+    void handleUpdatesRefreshed();
 
 private:
     QTimer *checkTimer;

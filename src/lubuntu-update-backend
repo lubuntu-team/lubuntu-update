@@ -8,7 +8,7 @@ if [ "$1" = 'pkgver' ]; then
 	shift
 	while [ "$1" != '' ]; do
 		source="$(apt-cache show "$1" | grep 'Source:' | cut -d' ' -f2)"
-		version="$(apt-cache show lubuntu-default-settings | grep Version: | head -n1 | cut -d' ' -f2)"
+		version="$(apt-cache show "$1" | grep Version: | head -n1 | cut -d' ' -f2)"
 		if [ "$source" = '' ]; then
 			echo "$1"
 		else
@@ -17,6 +17,8 @@ if [ "$1" = 'pkgver' ]; then
 		echo "$version"
 		shift
 	done
+elif [ "$1" = 'checkupdate' ]; then
+	apt-get -o Apt::Color='0' -o Dpkg::Use-Pty='0' update
 elif [ "$1" = 'doupdate' ]; then
 	# Prepare to be able to grep through the logs
 	rm /run/lubuntu-update-apt-log || true

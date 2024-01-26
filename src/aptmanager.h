@@ -17,18 +17,21 @@ public:
     AptManager(QObject *parent = nullptr);
     static QList<QStringList> getUpdateInfo();
     void applyFullUpgrade();
+    void checkForUpdates();
     void keepConffile(QString conffile);
     void replaceConffile(QString conffile);
     void doneWithConffiles();
 
 signals:
     void updateComplete();
+    void checkUpdatesComplete();
     void progressUpdated(int progress);
     void logLineReady(QString logLine);
     void conffileListReady(QStringList conffileList);
 
 private slots:
-    void handleProcessBuffer();
+    void handleUpdateProcessBuffer();
+    void handleCheckUpdateProcessBuffer();
 
 private:
     static void parseAptLine(QString line, bool *gettingInstallPackages, bool *gettingUpgradePackages, bool *gettingUninstallPackages, bool *gettingHeldPackages, bool *gettingPackageList);

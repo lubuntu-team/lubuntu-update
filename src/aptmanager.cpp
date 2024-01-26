@@ -30,8 +30,19 @@ void AptManager::applyFullUpgrade()
     // Note that the lubuntu-update-backend script sets LC_ALL=C in it already, so we don't need to add that here.
     aptProcess->setArguments(QStringList() << "/usr/libexec/lubuntu-update-backend" << "doupdate");
     aptProcess->setProcessChannelMode(QProcess::MergedChannels);
-    QObject::connect(aptProcess, &QProcess::readyRead, this, &AptManager::handleProcessBuffer);
-    QObject::connect(aptProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, &AptManager::handleProcessBuffer);
+    QObject::connect(aptProcess, &QProcess::readyRead, this, &AptManager::handleUpdateProcessBuffer);
+    QObject::connect(aptProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, &AptManager::handleUpdateProcessBuffer);
+    aptProcess->start();
+}
+
+void AptManager::checkForUpdates()
+{
+    aptProcess = new QProcess();
+    aptProcess->setProgram("/usr/bin/lxqt-sudo");
+    aptProcess->setArguments(QStringList() << "/usr/libexec/lubuntu-update-backend" << "checkupdate");
+    aptProcess->setProcessChannelMode(QProcess::MergedChannels);
+    QObject::connect(aptProcess, &QProcess::readyRead, this, &AptManager::handleCheckUpdateProcessBuffer);
+    QObject::connect(aptProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, &AptManager::handleCheckUpdateProcessBuffer);
     aptProcess->start();
 }
 
@@ -56,7 +67,7 @@ void AptManager::doneWithConffiles()
     aptProcess->closeWriteChannel();
 }
 
-void AptManager::handleProcessBuffer()
+void AptManager::handleUpdateProcessBuffer()
 {
     int maxWaitTime = 20;
     while (!aptProcess->canReadLine() && maxWaitTime > 0) {
@@ -145,6 +156,27 @@ void AptManager::handleProcessBuffer()
     if (aptProcess->state() == QProcess::NotRunning) {
         emit progressUpdated(100); // just in case the progress bar didn't fill all the way due to a previous partial download
         emit updateComplete();
+        aptProcess->deleteLater();
+    }
+}
+
+void AptManager::handleCheckUpdateProcessBuffer()
+{
+    /*
+     * We don't have the busy wait here because the apt output when doing
+     * `apt-get update` is somewhat ill-formed and difficult to fix, and
+     * busy-waiting was resulting in *awful* progress bar choppiness.
+     */
+
+    char lineBuf[2048];
+    while(aptProcess->canReadLine()) {
+        aptProcess->readLine(lineBuf, 2048);
+        QString line = QString(lineBuf);
+        emit logLineReady(line);
+    }
+
+    if (aptProcess->state() == QProcess::NotRunning) {
+        emit checkUpdatesComplete();
         aptProcess->deleteLater();
     }
 }

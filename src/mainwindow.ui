@@ -86,9 +86,9 @@ font: 9pt &quot;Monospace&quot;;</string>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="detailsButton">
+       <widget class="QPushButton" name="checkUpdatesButton">
         <property name="text">
-         <string>Details</string>
+         <string>Check for Updates</string>
         </property>
        </widget>
       </item>

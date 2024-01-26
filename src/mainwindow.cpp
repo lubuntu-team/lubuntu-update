@@ -17,12 +17,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->progressBar->setVisible(false);
     ui->logView->setVisible(false);
 
-    // FIXME: Implement the Details screen and attach this button to it rather than disabling it.
-    ui->detailsButton->setVisible(false);
-
     connect(ui->installButton, &QPushButton::clicked, this, &MainWindow::onInstallButtonClicked);
+    connect(ui->checkUpdatesButton, &QPushButton::clicked, this, &MainWindow::onCheckUpdatesButtonClicked);
     connect(ui->closeButton, &QPushButton::clicked, this, &MainWindow::onCloseButtonClicked);
     connect(aptManager, &AptManager::updateComplete, this, &MainWindow::onUpdateCompleted);
+    connect(aptManager, &AptManager::checkUpdatesComplete, this, &MainWindow::onCheckUpdatesCompleted);
     connect(aptManager, &AptManager::progressUpdated, this, &MainWindow::onProgressUpdate);
     connect(aptManager, &AptManager::logLineReady, this, &MainWindow::onLogLineReady);
     connect(aptManager, &AptManager::conffileListReady, this, &MainWindow::onConffileListReady);
@@ -39,9 +38,9 @@ void MainWindow::setUpdateInfo(QList<QStringList> updateInfo)
     // The progress bar and log view are shown after the user chooses to begin installing updates
     ui->progressBar->setVisible(false);
     ui->logView->setVisible(false);
-    ui->detailsButton->setEnabled(true);
     ui->closeButton->setEnabled(true);
     ui->installButton->setEnabled(false); // Correct, it starts out false, we turn it to true if there are any updates.
+    ui->checkUpdatesButton->setEnabled(true);
 
     for (int i = 0;i < 4;i++) {
         if (updateInfo[i].count() > 0) {
@@ -51,16 +50,16 @@ void MainWindow::setUpdateInfo(QList<QStringList> updateInfo)
         QTreeWidgetItem *installItem;
         switch (i) {
         case 0:
-            installItem = new QTreeWidgetItem(QStringList() << "To be installed");
+            installItem = new QTreeWidgetItem(QStringList() << tr("To be installed"));
             break;
         case 1:
-            installItem = new QTreeWidgetItem(QStringList() << "To be upgraded");
+            installItem = new QTreeWidgetItem(QStringList() << tr("To be upgraded"));
             break;
         case 2:
-            installItem = new QTreeWidgetItem(QStringList() << "To be removed");
+            installItem = new QTreeWidgetItem(QStringList() << tr("To be removed"));
             break;
         case 3:
-            installItem = new QTreeWidgetItem(QStringList() << "Held back (usually temporarily)");
+            installItem = new QTreeWidgetItem(QStringList() << tr("Held back (usually temporarily)"));
             break;
         }
 
@@ -71,7 +70,7 @@ void MainWindow::setUpdateInfo(QList<QStringList> updateInfo)
 
         ui->packageView->addTopLevelItem(installItem);
     }
-    ui->statLabel->setText(QString("%1 package(s) will be updated. %2 of these updates are security-related.")
+    ui->statLabel->setText(tr("%1 package(s) will be updated. %2 of these updates are security-related.")
       .arg(QString::number(updateInfo[0].count() + updateInfo[1].count() + updateInfo[2].count()),
       QString::number(updateInfo[4].count())));
 }
@@ -102,12 +101,28 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::onInstallButtonClicked()
 {
+    ui->logView->clear();
     ui->progressBar->setVisible(true);
     ui->logView->setVisible(true);
     ui->installButton->setEnabled(false);
-    ui->detailsButton->setEnabled(false);
+    ui->checkUpdatesButton->setEnabled(false);
     ui->closeButton->setEnabled(false);
+    ui->progressBar->setMinimum(0);
+    ui->progressBar->setMaximum(100);
     aptManager->applyFullUpgrade();
+}
+
+void MainWindow::onCheckUpdatesButtonClicked()
+{
+    ui->logView->clear();
+    ui->progressBar->setVisible(true);
+    ui->logView->setVisible(true);
+    ui->installButton->setEnabled(false);
+    ui->checkUpdatesButton->setEnabled(false);
+    ui->closeButton->setEnabled(false);
+    ui->progressBar->setMinimum(0);
+    ui->progressBar->setMaximum(0);
+    aptManager->checkForUpdates();
 }
 
 void MainWindow::onCloseButtonClicked()
@@ -118,10 +133,17 @@ void MainWindow::onCloseButtonClicked()
 void MainWindow::onUpdateCompleted()
 {
     ui->closeButton->setEnabled(true);
+    ui->checkUpdatesButton->setEnabled(true);
     ui->installButton->setEnabled(false);
     ui->progressBar->setVisible(false);
-    ui->statLabel->setText("Update installation complete.");
+    ui->statLabel->setText(tr("Update installation complete."));
     emit updatesInstalled(); // this tells the orchestrator to hide the tray icon
+}
+
+void MainWindow::onCheckUpdatesCompleted()
+{
+    ui->closeButton->setEnabled(true); // unlocks the updater so that the orchestrator actually can update things
+    emit updatesRefreshed(); // this tells the orchestrator to re-scan for updates
 }
 
 void MainWindow::onProgressUpdate(int progress)
