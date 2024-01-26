@@ -39,13 +39,16 @@ void MainWindow::setUpdateInfo(QList<QStringList> updateInfo)
     ui->progressBar->setVisible(false);
     ui->logView->setVisible(false);
     ui->closeButton->setEnabled(true);
-    ui->installButton->setEnabled(false); // Correct, it starts out false, we turn it to true if there are any updates.
     ui->checkUpdatesButton->setEnabled(true);
 
+    bool installEnabled = false
+
     for (int i = 0;i < 4;i++) {
-        if (updateInfo[i].count() > 0) {
-            ui->installButton->setEnabled(true);
-        }
+        int count = updateInfo[i].count();
+
+        if (count > 0) {
+            installEnabled = true;
+        } else { continue; }
 
         QTreeWidgetItem *installItem;
         switch (i) {
@@ -63,7 +66,7 @@ void MainWindow::setUpdateInfo(QList<QStringList> updateInfo)
             break;
         }
 
-        for (int j = 0;j < updateInfo[i].count();j++) {
+        for (int j = 0;j < count;j++) {
             // TODO: Add security update detection here - security updates should be marked in some way
             installItem->addChild(new QTreeWidgetItem(QStringList() << updateInfo[i][j]));
         }
@@ -73,6 +76,8 @@ void MainWindow::setUpdateInfo(QList<QStringList> updateInfo)
     ui->statLabel->setText(tr("%1 package(s) will be updated. %2 of these updates are security-related.")
       .arg(QString::number(updateInfo[0].count() + updateInfo[1].count() + updateInfo[2].count()),
       QString::number(updateInfo[4].count())));
+    
+    ui->installButton->setEnabled(installEnabled);
 }
 
 bool MainWindow::isLockedOpen()
