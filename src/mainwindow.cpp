@@ -41,7 +41,7 @@ void MainWindow::setUpdateInfo(QList<QStringList> updateInfo)
     ui->closeButton->setEnabled(true);
     ui->checkUpdatesButton->setEnabled(true);
 
-    bool installEnabled = false
+    bool installEnabled = false;
 
     for (int i = 0;i < 4;i++) {
         int count = updateInfo[i].count();

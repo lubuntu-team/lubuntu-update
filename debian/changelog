@@ -1,3 +1,12 @@
+lubuntu-update-notifier (1.0.0~alpha2) noble; urgency=medium
+
+  * New feature release. Notable additions:
+    - The ability to check for updates directly in the updater has been added.
+    - Irrelevant package sections are no longer shown.
+    - Strings are now translatable.
+
+ -- Aaron Rainbolt <arraybolt3@ubuntu.com>  Fri, 26 Jan 2024 22:11:49 +0000
+
 lubuntu-update-notifier (1.0.0~alpha1) noble; urgency=medium
 
   * Replace the old update notifier with Lubuntu Update.
