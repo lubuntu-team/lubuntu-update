@@ -4,6 +4,43 @@
 set -e
 export LC_ALL='C'
 
+# Returns 0 if the release is supported, 1 if unsupported, 2 if if didn't exist at all, and 3 if something went wrong.
+isReleaseSupported () {
+	releaseYear="${1:-}";
+	releaseMonth="${2:-}";
+	metaReleaseStr="${3:-}";
+
+	if [ -z "$releaseYear" ]; then
+		echo '! ! ! releaseYear is blank';
+		return 3;
+	elif [ -z "$releaseMonth" ]; then
+		echo '! ! ! releaseMonth is blank';
+		return 3;
+	elif [ -z "$metaReleaseStr" ]; then
+		echo '! ! ! metaReleaseStr is blank';
+		return 3;
+	fi
+
+	releaseCode="$releaseYear.$releaseMonth";
+	scanForSupported='n';
+
+	while IFS= read -r line || [[ -n $line ]]; do
+		if [[ "$line" =~ $releaseCode ]]; then
+			scanForSupported='y';
+		fi
+		if [ "$scanForSupported" = 'y' ]; then
+			if [[ "$line" =~ Supported ]]; then
+				if [ "$(echo "$line" | cut -d':' -f2 | tail -c+2)" = '0' ]; then
+					return 1;
+				else
+					return 0;
+				fi
+			fi
+		fi
+	done < <(printf '%s' "$metaReleaseStr")
+	return 2;
+}
+
 if [ "$1" = 'pkgver' ]; then
 	shift
 	while [ "$1" != '' ]; do
@@ -89,6 +126,43 @@ elif [ "$1" = 'doupdate' ]; then
 			gotCommand='no'
 		fi
 	done
+
+	echo 'Checking release status...'
+
+	releaseCode="$(cat /etc/lsb-release | grep "DISTRIB_RELEASE" | cut -d'=' -f2)";
+	releaseYear="$(cut -d'.' -f1 <<< "$releaseCode")";
+	releaseMonth="$(cut -d'.' -f2 <<< "$releaseCode")";
+	metaReleaseData="$(curl https://changelogs.ubuntu.com/meta-release)";
+	nextReleaseMonth='';
+	nextReleaseYear='';
+	nextLTSReleaseMonth='';
+	nextLTSReleaseYear='';
+
+	if ((releaseMonth == 4)); then
+		nextReleaseMonth=((releaseMonth + 6));
+		nextReleaseYear="$releaseYear";
+		if (((releaseYear % 2) == 0)); then
+			nextLTSReleaseMonth='04';
+			nextLTSReleaseYear=((releaseYear + 2));
+		fi
+	else
+		nextReleaseMonth="$releaseMonth";
+		nextReleaseYear=((releaseYear + 1));
+	fi
+
+	if [ -n "$nextLTSReleaseYear" ]; then
+		if isReleaseSupported "$nextLTSReleaseYear" "$nextLTSReleaseMonth" "$metaReleaseData"; then
+			echo 'Lubuntu Update !!! NEW LTS RELEASE';
+			echo "$nextLTSReleaseYear.$nextLTSReleaseMonth";
+		fi
+	fi
+
+	if ! (((nextReleaseYear == nextLTSReleaseYear) && (nextReleaseMonth == nextLTSReleaseMonth))); then
+		if isReleaseSupported "$nextReleaseYear" "$nextReleaseMonth" "$metaReleaseData"; then
+			echo 'Lubuntu Update !!! NEW STABLE RELEASE';
+			echo "$nextReleaseYear.$nextReleaseMonth";
+		fi
+	fi
 
 	echo 'Update installation complete.'
 fi

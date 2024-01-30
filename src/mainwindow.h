@@ -39,9 +39,15 @@ private slots:
     void onProgressUpdate(int progress);
     void onLogLineReady(QString logLine);
     void onConffileListReady(QStringList conffileList);
+    void onNewLtsRelease(QString code);
+    void onNewStableRelease(QString code);
 
 private:
     Ui::MainWindow *ui;
     AptManager *aptManager;
+    bool newLtsReleaseAvailable = false;
+    bool newStableReleaseAvailable = false;
+
+    void handleNewReleases();
 };
 #endif // MAINWINDOW_H

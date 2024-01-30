@@ -25,6 +25,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(aptManager, &AptManager::progressUpdated, this, &MainWindow::onProgressUpdate);
     connect(aptManager, &AptManager::logLineReady, this, &MainWindow::onLogLineReady);
     connect(aptManager, &AptManager::conffileListReady, this, &MainWindow::onConffileListReady);
+    connect(aptManager, &AptManager::newLtsRelease, this, &MainWindow::onNewLtsRelease);
+    connect(aptManager, &AptManager::newStableRelease, this, &MainWindow::onNewStableRelease);
 }
 
 MainWindow::~MainWindow()
@@ -143,6 +145,7 @@ void MainWindow::onUpdateCompleted()
     ui->progressBar->setVisible(false);
     ui->statLabel->setText(tr("Update installation complete."));
     emit updatesInstalled(); // this tells the orchestrator to hide the tray icon
+    handleNewReleases();
 }
 
 void MainWindow::onCheckUpdatesCompleted()
@@ -174,4 +177,21 @@ void MainWindow::onConffileListReady(QStringList conffileList)
         aptManager->keepConffile(single);
     }
     aptManager->doneWithConffiles();
+}
+
+void MainWindow::onNewLtsRelease(QString code)
+{
+    newLtsReleaseAvailable = true;
+}
+
+void MainWindow::onNewStableRelease(QString code)
+{
+    newStableReleaseAvailable = true;
+}
+
+void MainWindow::handleNewReleases()
+{
+    // TODO: Write code that informs the user when a new release is available here
+    newLtsReleaseAvailable = false;
+    newStableReleaseAvailable = false;
 }
