@@ -3,6 +3,7 @@
 
 #include "mainwindow.h"
 
+#include <QDateTime>
 #include <QObject>
 #include <QStringList>
 
@@ -22,12 +23,14 @@ private slots:
     void checkForUpdates();
     void handleUpdatesInstalled();
     void handleUpdatesRefreshed();
+    void onNewReleaseAvailable(QStringList releaseCodes);
 
 private:
     QTimer *checkTimer;
     QSystemTrayIcon *trayIcon;
     QList<QStringList> updateInfo;
     MainWindow updaterWindow;
+    QDateTime nextUpgradeCheck;
 };
 
 #endif // ORCHESTRATOR_H

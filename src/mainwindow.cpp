@@ -25,8 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(aptManager, &AptManager::progressUpdated, this, &MainWindow::onProgressUpdate);
     connect(aptManager, &AptManager::logLineReady, this, &MainWindow::onLogLineReady);
     connect(aptManager, &AptManager::conffileListReady, this, &MainWindow::onConffileListReady);
-    connect(aptManager, &AptManager::newLtsRelease, this, &MainWindow::onNewLtsRelease);
-    connect(aptManager, &AptManager::newStableRelease, this, &MainWindow::onNewStableRelease);
+    connect(aptManager, &AptManager::newLtsRelease, this, &MainWindow::onNewRelease);
 }
 
 MainWindow::~MainWindow()
@@ -179,19 +178,13 @@ void MainWindow::onConffileListReady(QStringList conffileList)
     aptManager->doneWithConffiles();
 }
 
-void MainWindow::onNewLtsRelease(QString code)
+void MainWindow::onNewRelease(QString code)
 {
-    newLtsReleaseAvailable = true;
-}
-
-void MainWindow::onNewStableRelease(QString code)
-{
-    newStableReleaseAvailable = true;
+    releaseCodes.append(code);
 }
 
 void MainWindow::handleNewReleases()
 {
-    // TODO: Write code that informs the user when a new release is available here
-    newLtsReleaseAvailable = false;
-    newStableReleaseAvailable = false;
+    emit newReleaseAvailable(releaseCodes);
+    releaseCodes.clear();
 }

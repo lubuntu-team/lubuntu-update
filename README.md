@@ -20,6 +20,11 @@ It is highly recommended that you use a Lubuntu virtual machine for testing and 
 
 Qt Creator is recommended for editing the code. It is present in Ubuntu's official repos and can be installed using `sudo apt install qtcreator`.
 
+## Config file format:
+There's only one field here:
+
+* nextDoReleaseUpgradeNotify=123456789 - Value is number of seconds since the UNIX epoch. Used to determine when to offer the user an upgrade.
+
 ## Missing features
 
 * Double-clicking on a package doesn't show detailed information for it yet.

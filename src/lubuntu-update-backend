@@ -152,14 +152,14 @@ elif [ "$1" = 'doupdate' ]; then
 
 	if [ -n "$nextLTSReleaseYear" ]; then
 		if isReleaseSupported "$nextLTSReleaseYear" "$nextLTSReleaseMonth" "$metaReleaseData"; then
-			echo 'Lubuntu Update !!! NEW LTS RELEASE';
+			echo 'Lubuntu Update !!! NEW RELEASE';
 			echo "$nextLTSReleaseYear.$nextLTSReleaseMonth";
 		fi
 	fi
 
 	if ! (((nextReleaseYear == nextLTSReleaseYear) && (nextReleaseMonth == nextLTSReleaseMonth))); then
 		if isReleaseSupported "$nextReleaseYear" "$nextReleaseMonth" "$metaReleaseData"; then
-			echo 'Lubuntu Update !!! NEW STABLE RELEASE';
+			echo 'Lubuntu Update !!! NEW RELEASE';
 			echo "$nextReleaseYear.$nextReleaseMonth";
 		fi
 	fi

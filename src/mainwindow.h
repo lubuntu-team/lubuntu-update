@@ -26,6 +26,7 @@ public:
 signals:
     void updatesInstalled();
     void updatesRefreshed();
+    void newReleaseAvailable(QStringList releaseCodes);
 
 protected slots:
     void closeEvent(QCloseEvent *event) override;
@@ -39,14 +40,12 @@ private slots:
     void onProgressUpdate(int progress);
     void onLogLineReady(QString logLine);
     void onConffileListReady(QStringList conffileList);
-    void onNewLtsRelease(QString code);
-    void onNewStableRelease(QString code);
+    void onNewRelease(QString code);
 
 private:
     Ui::MainWindow *ui;
     AptManager *aptManager;
-    bool newLtsReleaseAvailable = false;
-    bool newStableReleaseAvailable = false;
+    QStringList releaseCodes;
 
     void handleNewReleases();
 };

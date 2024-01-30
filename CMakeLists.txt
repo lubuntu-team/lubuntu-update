@@ -38,6 +38,9 @@ set(PROJECT_SOURCES
         src/conffilehandlerdialog.ui
         src/ipcfilewatcher.h
         src/ipcfilewatcher.cpp
+        src/releaseupgradewindow.h
+        src/releaseupgradewindow.cpp
+        src/releaseupgradewindow.ui
         ${TS_FILES}
 )
 
