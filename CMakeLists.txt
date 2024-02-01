@@ -41,6 +41,9 @@ set(PROJECT_SOURCES
         src/releaseupgradewindow.h
         src/releaseupgradewindow.cpp
         src/releaseupgradewindow.ui
+        src/upgradedelaywindow.h
+        src/upgradedelaywindow.cpp
+        src/upgradedelaywindow.ui
         ${TS_FILES}
 )
 

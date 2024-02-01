@@ -1,11 +1,13 @@
 #include "orchestrator.h"
 #include "mainwindow.h"
 #include "aptmanager.h"
+#include "releaseupgradewindow.h"
 
 #include <QDebug>
 #include <QDir>
 #include <QFile>
 #include <QIcon>
+#include <QProcess>
 #include <QSystemTrayIcon>
 #include <QTimer>
 
@@ -40,11 +42,13 @@ Orchestrator::Orchestrator(QObject *parent)
             }
         }
     }
+    configFile.close();
 
     connect(checkTimer, &QTimer::timeout, this, &Orchestrator::checkForUpdates);
     connect(trayIcon, &QSystemTrayIcon::activated, this, &Orchestrator::displayUpdater);
     connect(&updaterWindow, &MainWindow::updatesInstalled, this, &Orchestrator::handleUpdatesInstalled);
     connect(&updaterWindow, &MainWindow::updatesRefreshed, this, &Orchestrator::handleUpdatesRefreshed);
+    connect(&updaterWindow, &MainWindow::newReleaseAvailable, this, &Orchestrator::onNewReleaseAvailable);
 
     checkTimer->start(21600000); // check four times a day, at least one of those times unattended-upgrades should have refreshed the apt database
 
@@ -131,9 +135,51 @@ void Orchestrator::onNewReleaseAvailable(QStringList releaseCodes)
             if (((releaseYear % 2 == 0) && (releaseMonth == 4)) || druType == "normal") {
                 QDateTime now = QDateTime::currentDateTime();
                 if (nextUpgradeCheck < now) {
-                    // TODO: attempt to show window here
+                    ReleaseUpgradeWindow upgradeWindow(releaseCodes[i]);
+                    upgradeWindow.exec();
+                    if (upgradeWindow.getUpgradeAccepted()) {
+                        doReleaseUpgrade();
+                    } else if (upgradeWindow.getUpgradeDelayStamp() > 0) {
+                        delayReleaseUpgrade(upgradeWindow.getUpgradeDelayStamp());
+                    } else {
+                        declineReleaseUpgrade();
+                    }
+                    break;
                 }
             }
         }
     }
+}
+
+void Orchestrator::doReleaseUpgrade()
+{
+    QProcess druProcess;
+    druProcess.setProgram("/usr/bin/lxqt-sudo");
+    druProcess.setArguments(QStringList() << "/usr/libexec/lubuntu-update-backend" << "doReleaseUpgrade");
+    druProcess.start();
+    druProcess.waitForFinished(-1);
+}
+
+void Orchestrator::delayReleaseUpgrade(qint64 timestamp)
+{
+    QFile configFile(QDir::homePath() + "/.config/lubuntu-update.conf");
+    bool success = configFile.open(QFile::WriteOnly);
+    if (success) {
+        configFile.write("nextDoReleaseUpgradeNotify=");
+        configFile.write(QString::number(timestamp).toUtf8());
+        configFile.write("\n");
+    } else {
+        qWarning() << "Could not write to " + QDir::homePath() + "/.config/lubuntu-update.conf, check permissions";
+    }
+    configFile.close();
+    nextUpgradeCheck = QDateTime::fromSecsSinceEpoch(timestamp);
+}
+
+void Orchestrator::declineReleaseUpgrade()
+{
+    QProcess druProcess;
+    druProcess.setProgram("/usr/bin/lxqt-sudo");
+    druProcess.setArguments(QStringList() << "/usr/libexec/lubuntu-update-backend" << "declineReleaseUpgrade");
+    druProcess.start();
+    druProcess.waitForFinished(-1);
 }

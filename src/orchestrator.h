@@ -9,6 +9,7 @@
 
 class QTimer;
 class QSystemTrayIcon;
+class ReleaseUpgradeWindow;
 
 class Orchestrator : public QObject
 {
@@ -31,6 +32,9 @@ private:
     QList<QStringList> updateInfo;
     MainWindow updaterWindow;
     QDateTime nextUpgradeCheck;
+    void doReleaseUpgrade();
+    void delayReleaseUpgrade(qint64 timestamp);
+    void declineReleaseUpgrade();
 };
 
 #endif // ORCHESTRATOR_H

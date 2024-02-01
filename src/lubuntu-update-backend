@@ -165,4 +165,8 @@ elif [ "$1" = 'doupdate' ]; then
 	fi
 
 	echo 'Update installation complete.'
+elif [ "$1" = 'doReleaseUpgrade' ]; then
+	do-release-upgrade -m desktop -f DistUpgradeViewKDE;
+elif [ "$1" = 'declineReleaseUpgrade' ]; then
+	sed -i -E 's/^Prompt=(never|lts|normal)$/Prompt=never/' /etc/update-manager/release-upgrades;
 fi

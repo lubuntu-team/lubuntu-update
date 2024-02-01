@@ -14,6 +14,8 @@ class ReleaseUpgradeWindow : public QDialog
 public:
     explicit ReleaseUpgradeWindow(QString releaseCode, QWidget *parent = nullptr);
     ~ReleaseUpgradeWindow();
+    bool getUpgradeAccepted();
+    qint64 getUpgradeDelayStamp();
 
 private slots:
     void onUpgradeClicked();
@@ -22,6 +24,9 @@ private slots:
 
 private:
     Ui::ReleaseUpgradeWindow *ui;
+    QString code;
+    bool upgradeAccepted = false;
+    qint64 upgradeDelayStamp = 0;
 };
 
 #endif // RELEASEUPGRADEWINDOW_H
