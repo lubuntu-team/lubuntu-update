@@ -7,17 +7,20 @@
     <x>0</x>
     <y>0</y>
     <width>393</width>
-    <height>74</height>
+    <height>116</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Lubuntu Update</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QLabel" name="upgradeLabel">
      <property name="text">
       <string>upgrade available</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
