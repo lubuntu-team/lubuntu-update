@@ -2,7 +2,7 @@
 
 Copyright (c) 2023-2024 Lubuntu Contributors. Licensed under the GNU General Public License version 2, or (at your option) any later version.
 
-Build dependencies are Qt 5.15 and cmake, runtime dependencies are apt, apt-get, and diff.
+Build dependencies are Qt 5.15 and cmake, runtime dependencies are apt, apt-get, curl, and diff.
 
 To build:
 
