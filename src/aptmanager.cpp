@@ -144,14 +144,15 @@ void AptManager::handleUpdateProcessBuffer()
                     conffileList.append(confLine);
                 }
             }
-        } else if (line == "Lubuntu Update !!! NEW RELEASE") {
-            // Same busy-wait technique, but here we're just getting one extra line, the model code.
+        } else if (line == "Lubuntu Update !!! NEW RELEASE\r\n") {
+            // Same busy-wait technique, but here we're just getting one extra line, the release code.
             while (!aptProcess->canReadLine()) {
                 QThread::msleep(20);
             }
             aptProcess->readLine(lineBuf, 2048);
-            QString ltsReleaseCode = QString(lineBuf);
-            emit newLtsRelease(ltsReleaseCode);
+            QString releaseCode = QString(lineBuf);
+	    releaseCode = releaseCode.left(releaseCode.count() - 2);
+            emit newRelease(releaseCode);
         }
 
         double percentageDone = (static_cast<double>(internalUpdateProgress) / (((internalUpdateInfo[0].count() + internalUpdateInfo[1].count()) * 4) + internalUpdateInfo[2].count())) * 100;

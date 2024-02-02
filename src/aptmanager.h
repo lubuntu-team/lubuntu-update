@@ -28,8 +28,7 @@ signals:
     void progressUpdated(int progress);
     void logLineReady(QString logLine);
     void conffileListReady(QStringList conffileList);
-    void newLtsRelease(QString code);
-    void newStableRelease(QString code);
+    void newRelease(QString code);
 
 private slots:
     void handleUpdateProcessBuffer();

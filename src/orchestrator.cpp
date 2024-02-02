@@ -26,7 +26,7 @@ Orchestrator::Orchestrator(QObject *parent)
     bool success = configFile.open(QFile::ReadOnly);
     if (success) {
         char lineBuf[2048];
-        while (configFile.canReadLine()) {
+        while (!configFile.atEnd()) {
             configFile.readLine(lineBuf, 2048);
             QString line(lineBuf);
             line = line.trimmed();
@@ -107,7 +107,7 @@ void Orchestrator::onNewReleaseAvailable(QStringList releaseCodes)
     QString druType;
     if (success) {
         char lineBuf[2048];
-        while (druTypeFile.canReadLine()) {
+        while (!druTypeFile.atEnd()) {
             druTypeFile.readLine(lineBuf, 2048);
             QString line(lineBuf);
             line = line.trimmed();
@@ -125,6 +125,9 @@ void Orchestrator::onNewReleaseAvailable(QStringList releaseCodes)
                 break;
             }
         }
+    } else {
+        druType="normal";
+        druTypeFile.close();
     }
 
     for (int i = 0;i < releaseCodes.count();i++) {

@@ -69,63 +69,66 @@ elif [ "$1" = 'doupdate' ]; then
 	DEBIAN_FRONTEND='kde' apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' -o Apt::Color='0' -o Dpkg::Use-Pty='0' -y dist-upgrade |& tee /run/lubuntu-update-apt-log
 
 	# Find all the conffiles
+	doConffiles='y';
 	mapfile conffileRawList <<< "$(grep -P "^Configuration file \'.*\'$" '/run/lubuntu-update-apt-log')"
 	if [ "$(echo "${conffileRawList[0]}" | head -c1)" != 'C' ]; then # Empty or invalid list, we're done
-		exit 0
+		doConffiles='n';
 	fi
 
-	conffileList=()
-	counter=0
-	while [ "$counter" -lt "${#conffileRawList[@]}" ]; do
-		# Cut off "Configuration file '" from the start and "'" plus a couple trailing characters from the end
-		conffileList[counter]="$(echo "${conffileRawList[$counter]}" | tail -c+21 | head -c-3)"
-		counter=$((counter+1))
-	done
+	if [ "$doConffiles" = 'y' ]; then
+		conffileList=()
+		counter=0
+		while [ "$counter" -lt "${#conffileRawList[@]}" ]; do
+			# Cut off "Configuration file '" from the start and "'" plus a couple trailing characters from the end
+			conffileList[counter]="$(echo "${conffileRawList[$counter]}" | tail -c+21 | head -c-3)"
+			counter=$((counter+1))
+		done
 
-	echo "Lubuntu Update !!! CONFIGURATION FILE LIST START";
-	counter=0
-	while [ "$counter" -lt "${#conffileList[@]}" ]; do
-		echo "${conffileList[$counter]}"
-		counter=$((counter+1))
-	done
-	echo "Lubuntu Update !!! CONFIGURATION FILE LIST END";
+		echo "Lubuntu Update !!! CONFIGURATION FILE LIST START";
+		counter=0
+		while [ "$counter" -lt "${#conffileList[@]}" ]; do
+			echo "${conffileList[$counter]}"
+			counter=$((counter+1))
+		done
+		echo "Lubuntu Update !!! CONFIGURATION FILE LIST END";
 
-	# If we make it this far, there were conffiles to deal with
-	breakLoop='no'
-	gotCommand='no'
-	commandName=''
-	while [ "$breakLoop" = 'no' ]; do
-		read -r inputVal
-		if [ "$gotCommand" = 'no' ]; then
-			if [ "$inputVal" = 'done' ]; then
-				breakLoop='yes'
+		# If we make it this far, there were conffiles to deal with
+		breakLoop='no'
+		gotCommand='no'
+		commandName=''
+		while [ "$breakLoop" = 'no' ]; do
+			read -r inputVal
+			if [ "$gotCommand" = 'no' ]; then
+				if [ "$inputVal" = 'done' ]; then
+					breakLoop='yes'
+				else
+					commandName="$inputVal"
+					gotCommand='yes'
+				fi
 			else
-				commandName="$inputVal"
-				gotCommand='yes'
+				if [ "$commandName" = 'replace' ]; then # Replace an existing file
+					counter=0
+					while [ "$counter" -lt "${#conffileList[@]}" ]; do
+						if [ "$inputVal" = "${conffileList[$counter]}" ]; then
+							mv "$inputVal.dpkg-dist" "$inputVal"
+							break
+						fi
+						counter=$((counter+1))
+					done
+				elif [ "$commandName" = 'keep' ]; then # Keep an existing file
+					counter=0
+					while [ "$counter" -lt "${#conffileList[@]}" ]; do
+						if [ "$inputVal" = "${conffileList[$counter]}" ]; then
+							rm "$inputVal.dpkg-dist"
+							break
+						fi
+						counter=$((counter+1))
+					done
+				fi
+				gotCommand='no'
 			fi
-		else
-			if [ "$commandName" = 'replace' ]; then # Replace an existing file
-				counter=0
-				while [ "$counter" -lt "${#conffileList[@]}" ]; do
-					if [ "$inputVal" = "${conffileList[$counter]}" ]; then
-						mv "$inputVal.dpkg-dist" "$inputVal"
-						break
-					fi
-					counter=$((counter+1))
-				done
-			elif [ "$commandName" = 'keep' ]; then # Keep an existing file
-				counter=0
-				while [ "$counter" -lt "${#conffileList[@]}" ]; do
-					if [ "$inputVal" = "${conffileList[$counter]}" ]; then
-						rm "$inputVal.dpkg-dist"
-						break
-					fi
-					counter=$((counter+1))
-				done
-			fi
-			gotCommand='no'
-		fi
-	done
+		done
+	fi
 
 	echo 'Checking release status...'
 
@@ -133,36 +136,52 @@ elif [ "$1" = 'doupdate' ]; then
 	releaseYear="$(cut -d'.' -f1 <<< "$releaseCode")";
 	releaseMonth="$(cut -d'.' -f2 <<< "$releaseCode")";
 	metaReleaseData="$(curl https://changelogs.ubuntu.com/meta-release)";
-	nextReleaseMonth='';
-	nextReleaseYear='';
-	nextLTSReleaseMonth='';
-	nextLTSReleaseYear='';
+	#nextReleaseMonth='';
+	#nextReleaseYear='';
+	#nextLTSReleaseMonth='';
+	#nextLTSReleaseYear='';
 
-	if ((releaseMonth == 4)); then
-		nextReleaseMonth=((releaseMonth + 6));
-		nextReleaseYear="$releaseYear";
-		if (((releaseYear % 2) == 0)); then
-			nextLTSReleaseMonth='04';
-			nextLTSReleaseYear=((releaseYear + 2));
+	while true; do
+		if ((releaseMonth == 4)); then
+			releaseMonth='10';
+		else
+			releaseMonth='04';
+			((releaseYear++));
 		fi
-	else
-		nextReleaseMonth="$releaseMonth";
-		nextReleaseYear=((releaseYear + 1));
-	fi
-
-	if [ -n "$nextLTSReleaseYear" ]; then
-		if isReleaseSupported "$nextLTSReleaseYear" "$nextLTSReleaseMonth" "$metaReleaseData"; then
+		if isReleaseSupported "$releaseYear" "$releaseMonth" "$metaReleaseData"; then
 			echo 'Lubuntu Update !!! NEW RELEASE';
-			echo "$nextLTSReleaseYear.$nextLTSReleaseMonth";
+			echo "$releaseYear.$releaseMonth";
+			break;
 		fi
-	fi
+	done
 
-	if ! (((nextReleaseYear == nextLTSReleaseYear) && (nextReleaseMonth == nextLTSReleaseMonth))); then
-		if isReleaseSupported "$nextReleaseYear" "$nextReleaseMonth" "$metaReleaseData"; then
-			echo 'Lubuntu Update !!! NEW RELEASE';
-			echo "$nextReleaseYear.$nextReleaseMonth";
-		fi
-	fi
+#	if ((releaseMonth == 4)); then
+#		nextReleaseMonth=$((releaseMonth + 6));
+#		nextReleaseYear="$releaseYear";
+#		if (((releaseYear % 2) == 0)); then
+#			nextLTSReleaseMonth='04';
+#			nextLTSReleaseYear=$((releaseYear + 2));
+#		fi
+#	else
+#		nextReleaseMonth="$releaseMonth";
+#		nextReleaseYear=$((releaseYear + 1));
+#	fi
+#
+#	if [ -n "$nextLTSReleaseYear" ]; then
+#		if isReleaseSupported "$nextLTSReleaseYear" "$nextLTSReleaseMonth" "$metaReleaseData"; then
+#			echo 'Lubuntu Update !!! NEW RELEASE';
+#			echo "$nextLTSReleaseYear.$nextLTSReleaseMonth";
+#		fi
+#	fi
+#
+#	if ! (((nextReleaseYear == nextLTSReleaseYear) && (nextReleaseMonth == nextLTSReleaseMonth))); then
+#		if isReleaseSupported "$nextReleaseYear" "$nextReleaseMonth" "$metaReleaseData"; then
+#			echo 'Lubuntu Update !!! NEW RELEASE';
+#			echo "$nextReleaseYear.$nextReleaseMonth";
+#		else
+#			echo "Unsupported release: $nextReleaseYear.$nextReleaseMonth";
+#		fi
+#	fi
 
 	echo 'Update installation complete.'
 elif [ "$1" = 'doReleaseUpgrade' ]; then
