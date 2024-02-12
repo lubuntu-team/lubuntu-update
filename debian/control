@@ -12,7 +12,8 @@ Rules-Requires-Root: no
 
 Package: lubuntu-update-notifier
 Architecture: any
-Depends: ${misc:Depends},
+Depends: curl,
+         ${misc:Depends},
          ${shlibs:Depends}
 Description: Lubuntu's update installer
  Lubuntu Update is an enhanced, modern update installer for the Lubuntu

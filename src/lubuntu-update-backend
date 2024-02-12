@@ -148,9 +148,11 @@ elif [ "$1" = 'doupdate' ]; then
 			releaseMonth='04';
 			((releaseYear++));
 		fi
-		if isReleaseSupported "$releaseYear" "$releaseMonth" "$metaReleaseData"; then
+		releaseSupportedResult="$(isReleaseSupported "$releaseYear" "$releaseMonth" "$metaReleaseData"; echo "$?")";
+		if [ "$releaseSupportedResult" = '0' ]; then
 			echo 'Lubuntu Update !!! NEW RELEASE';
 			echo "$releaseYear.$releaseMonth";
+		elif [ "$releaseSupportedResult" = '2' ]; then
 			break;
 		fi
 	done
