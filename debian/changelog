@@ -1,3 +1,11 @@
+lubuntu-update-notifier (1.0.0~beta1) noble; urgency=medium
+
+  * Change from alpha to beta testing phase, this has been tested for a while
+    and looks pretty stable so far.
+  * Wait to start until lxqt-notificationd is present. (LP: #2056379)
+
+ -- Aaron Rainbolt <arraybolt3@ubuntu.com>  Thu, 07 Mar 2024 04:06:13 +0000
+
 lubuntu-update-notifier (1.0.0~alpha4) noble; urgency=medium
 
   * Fix infinite loop when no eligible new release is available.

@@ -7,7 +7,27 @@
 #include <QDialog>
 #include <QLocale>
 #include <QProcess>
+#include <QThread>
 #include <QTranslator>
+
+/*
+ * Detects if at least `count` processes that match `procName` are running.
+ */
+bool detectProc(QString procName, int count)
+{
+    QProcess procDetector;
+    procDetector.setProgram("/usr/bin/bash");
+    procDetector.setArguments(QStringList() << "-c" << "ps axo comm | grep " + procName);
+    procDetector.start();
+    procDetector.waitForFinished();
+    QString procDetectResult = procDetector.readAllStandardOutput();
+    procDetectResult = procDetectResult.trimmed();
+    QStringList procDetectResultList = procDetectResult.split('\n');
+    if (procDetectResultList.count() >= count) {
+        return true;
+    }
+    return false;
+}
 
 int main(int argc, char *argv[])
 {
@@ -28,20 +48,28 @@ int main(int argc, char *argv[])
      * /dev/shm/lubuntu-update/lubuntu-update-show-win and exit. This will
      * trigger the existing process to pop up a window.
      */
-
-    QProcess procDetector;
-    procDetector.setProgram("/usr/bin/bash");
-    procDetector.setArguments(QStringList() << "-c" << "ps axo comm | grep lubuntu-update");
-    procDetector.start();
-    procDetector.waitForFinished();
-    QString procDetectResult = procDetector.readAllStandardOutput();
-    procDetectResult = procDetectResult.trimmed();
-    QStringList procDetectResultList = procDetectResult.split('\n');
-    if (procDetectResultList.count() > 1) {
+    if (detectProc("lubuntu-update", 2)) {
         QFile flagFile("/dev/shm/lubuntu-update/lubuntu-update-show-win");
         flagFile.open(QFile::WriteOnly);
         flagFile.close();
         return 0;
+    }
+
+    /*
+     * Wait to run until lxqt-notificationd is running. This avoids a bug that
+     * causes notifications to show up in the entirely wrong spot. If it takes
+     * longer than about 30 seconds to show up, we continue on without it for
+     * the sake of getting security updates.
+     */
+    for (int i = 0;i < 30;i++) {
+        // "lxqt-notificati" is intentionally truncated here since that's how it shows up in the output of `ps axo comm`.
+        if (detectProc("lxqt-notificati", 1)) {
+            // Wait for it to initialize fully - 3 seconds should be way more than enough
+            QThread::sleep(3);
+            break;
+        } else {
+            QThread::sleep(1);
+        }
     }
 
     // Don't want the updater to stop just because the user closed it :P
