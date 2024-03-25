@@ -1,9 +1,13 @@
-#include "ipcfilewatcher.h"
+#include "windowshowwatcher.h"
 #include "orchestrator.h"
 #include "mainwindow.h"
 #include "conffilehandlerdialog.h"
 
 #include <QApplication>
+#include <QDBusConnection>
+#include <QDBusError>
+#include <QDBusInterface>
+#include <QDebug>
 #include <QDialog>
 #include <QLocale>
 #include <QProcess>
@@ -43,15 +47,20 @@ int main(int argc, char *argv[])
         }
     }
 
+    // Connect to D-Bus.
+    auto dbusConnection = QDBusConnection::sessionBus();
+
     /*
-     * If Lubuntu Update is already running, create
-     * /dev/shm/lubuntu-update/lubuntu-update-show-win and exit. This will
-     * trigger the existing process to pop up a window.
+     * If Lubuntu Update is already running, instruct the running instance to
+     * display its window via the D-Bus connection.
      */
     if (detectProc("lubuntu-update", 2)) {
-        QFile flagFile("/dev/shm/lubuntu-update/lubuntu-update-show-win");
-        flagFile.open(QFile::WriteOnly);
-        flagFile.close();
+        auto iface = new QDBusInterface("me.lubuntu.LubuntuUpdate.window", "/", "me.lubuntu.LubuntuUpdate.window", dbusConnection);
+        if (!iface->isValid()) {
+            qWarning().noquote() << dbusConnection.lastError().message();
+            return 1;
+        }
+        iface->call("showWindow");
         return 0;
     }
 
@@ -76,15 +85,15 @@ int main(int argc, char *argv[])
     a.setQuitOnLastWindowClosed(false);
 
     /*
-     * IPCFileWatcher just watches the /dev/shm/lubuntu-update folder for the
-     * creation of a lubuntu-update-show-win file. If it detects it, it
-     * immediately deletes it and emits a signal. This is then used later to
-     * cause the updater window to pop up.
+     * WindowShowWatcher is a very simple D-Bus service that allow triggering
+     * the Lubuntu Update window to be shown. If anything calls "showWindow"
+     * on this service, Lubuntu Update's window will pop up.
      */
+    QObject obj;
+    auto *wsw = new WindowShowWatcher(&obj);
+    dbusConnection.registerObject("/", &obj);
 
-    IPCFileWatcher *p = new IPCFileWatcher();
-
-    if (p->didInitFail()) {
+    if (!dbusConnection.registerService("me.lubuntu.LubuntuUpdate.window")) {
         return 1;
     }
 
@@ -99,10 +108,9 @@ int main(int argc, char *argv[])
      * there's no need to do anything with this except create it and then
      * start the event loop.
      */
-
     Orchestrator *o = new Orchestrator();
 
-    QObject::connect(p, &IPCFileWatcher::showWindowFlagDetected, o, &Orchestrator::displayUpdater);
+    QObject::connect(wsw, &WindowShowWatcher::showWindowTriggered, o, &Orchestrator::displayUpdater);
 
     /*
      * This is an artifact from testing the conffile handler window. You can

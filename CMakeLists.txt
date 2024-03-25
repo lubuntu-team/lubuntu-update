@@ -9,8 +9,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets LinguistTools)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets LinguistTools)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets DBus LinguistTools)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets DBus LinguistTools)
 
 set(TS_FILES
 	src/translations/lubuntu-update_en_US.ts
@@ -36,14 +36,14 @@ set(PROJECT_SOURCES
         src/conffilehandlerdialog.h
         src/conffilehandlerdialog.cpp
         src/conffilehandlerdialog.ui
-        src/ipcfilewatcher.h
-        src/ipcfilewatcher.cpp
         src/releaseupgradewindow.h
         src/releaseupgradewindow.cpp
         src/releaseupgradewindow.ui
         src/upgradedelaywindow.h
         src/upgradedelaywindow.cpp
         src/upgradedelaywindow.ui
+        src/windowshowwatcher.h
+        src/windowshowwatcher.cpp
         ${TS_FILES}
 )
 
@@ -63,7 +63,9 @@ add_executable(lubuntu-update
 
 add_dependencies(lubuntu-update translations)
 
-target_link_libraries(lubuntu-update PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(lubuntu-update PRIVATE
+    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::DBus)
 
 install(TARGETS lubuntu-update
     BUNDLE DESTINATION .

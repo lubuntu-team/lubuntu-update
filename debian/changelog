@@ -1,3 +1,11 @@
+lubuntu-update-notifier (1.0.0) noble; urgency=medium
+
+  * Change from beta to final release.
+  * Use D-Bus as a window show trigger rather than clunky drop files, this
+    will prevent issues if multiple users are logged in at once.
+
+ -- Aaron Rainbolt <arraybolt3@ubuntu.com>  Mon, 25 Mar 2024 16:15:49 -0500
+
 lubuntu-update-notifier (1.0.0~beta1) noble; urgency=medium
 
   * Change from alpha to beta testing phase, this has been tested for a while
