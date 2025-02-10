@@ -83,47 +83,56 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="80"/>
+        <location filename="../mainwindow.ui" line="83"/>
         <source>Install Updates</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="91"/>
+        <location filename="../mainwindow.ui" line="94"/>
         <source>Check for Updates</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="98"/>
+        <location filename="../mainwindow.ui" line="101"/>
         <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="53"/>
+        <location filename="../mainwindow.cpp" line="57"/>
         <source>To be installed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="56"/>
+        <location filename="../mainwindow.cpp" line="60"/>
         <source>To be upgraded</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="59"/>
+        <location filename="../mainwindow.cpp" line="63"/>
         <source>To be removed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="62"/>
+        <location filename="../mainwindow.cpp" line="66"/>
         <source>Held back (usually temporarily)</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="73"/>
-        <source>%1 package(s) will be updated. %2 of these updates are security-related.</source>
-        <translation type="unfinished"></translation>
+    <message numerus="yes">
+        <location filename="../mainwindow.cpp" line="80"/>
+        <source>%n package(s) will be updated. </source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../mainwindow.cpp" line="82"/>
+        <source>%n of these updates are security-related.</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="139"/>
+        <location filename="../mainwindow.cpp" line="149"/>
         <source>Update installation complete.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -131,12 +140,90 @@
 <context>
     <name>Orchestrator</name>
     <message>
-        <location filename="../orchestrator.cpp" line="38"/>
+        <location filename="../orchestrator.cpp" line="71"/>
         <source>Updates available!
 
 %1 to upgrade, %2 to install, and %3 to remove.
 
 Click the tray icon to install the updates.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ReleaseUpgradeWindow</name>
+    <message>
+        <location filename="../releaseupgradewindow.ui" line="14"/>
+        <location filename="../releaseupgradewindow.cpp" line="58"/>
+        <source>Lubuntu Update</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../releaseupgradewindow.ui" line="20"/>
+        <source>upgrade available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../releaseupgradewindow.ui" line="45"/>
+        <source>Upgrade Now</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../releaseupgradewindow.ui" line="52"/>
+        <source>Remind me later</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../releaseupgradewindow.ui" line="59"/>
+        <source>Decline Upgrade</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../releaseupgradewindow.cpp" line="14"/>
+        <source>An upgrade to Lubuntu %1 is available! Would you like to install this upgrade now?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../releaseupgradewindow.cpp" line="59"/>
+        <source>You have declined the upgrade to Lubuntu %1.
+You can upgrade manually by following the directions at https://manual.lubuntu.me/stable/D/upgrading.html.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>UpgradeDelayWindow</name>
+    <message>
+        <location filename="../upgradedelaywindow.ui" line="14"/>
+        <source>Lubuntu Update</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../upgradedelaywindow.ui" line="20"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;How long would you like to wait before being reminded of the upgrade again?&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../upgradedelaywindow.ui" line="48"/>
+        <source>OK</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../upgradedelaywindow.ui" line="55"/>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../upgradedelaywindow.ui" line="63"/>
+        <source>Days</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../upgradedelaywindow.ui" line="68"/>
+        <source>Weeks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../upgradedelaywindow.ui" line="73"/>
+        <source>Months</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

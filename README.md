@@ -1,8 +1,8 @@
 # Lubuntu Update
 
-Copyright (c) 2023-2024 Lubuntu Contributors. Licensed under the GNU General Public License version 2, or (at your option) any later version.
+Copyright (c) 2023-2025 Lubuntu Contributors. Licensed under the GNU General Public License version 2, or (at your option) any later version.
 
-Build dependencies are Qt 5.15 and cmake, runtime dependencies are apt, apt-get, curl, and diff.
+Build dependencies are Qt 6 and cmake, runtime dependencies are apt, apt-get, curl, and diff.
 
 To build:
 
@@ -47,7 +47,9 @@ For instance, if I were to add Chinese to the list of languages that could be tr
     vim gen_ts.sh
     # add this code to the langList array:
     #    'zh_CN'
-    ./gen_ts.sh
+    cd src
+    ../gen_ts.sh
+    cd -
     vim CMakeLists.txt
     # add this line to the TS_FILES list:
     #    src/translations/lubuntu-update_zh_CN.ts

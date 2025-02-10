@@ -2,6 +2,7 @@
     <qresource prefix="/i18n">
         <file alias="en_US">lubuntu-update_en_US.qm</file>
         <file alias="es_ES">lubuntu-update_es_ES.qm</file>
+        <file alias="fr_FR">lubuntu-update_fr_FR.qm</file>
         <file alias="zh_CN">lubuntu-update_zh_CN.qm</file>
     </qresource>
 </RCC>

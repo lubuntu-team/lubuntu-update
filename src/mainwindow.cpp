@@ -74,9 +74,13 @@ void MainWindow::setUpdateInfo(QList<QStringList> updateInfo)
 
         ui->packageView->addTopLevelItem(installItem);
     }
-    ui->statLabel->setText(tr("%1 package(s) will be updated. %2 of these updates are security-related.")
-      .arg(QString::number(updateInfo[0].count() + updateInfo[1].count() + updateInfo[2].count()),
-      QString::number(updateInfo[4].count())));
+    int updated = updateInfo[0].count() + updateInfo[1].count() + updateInfo[2].count();
+    int securityRelated = updateInfo[4].count();
+    ui->statLabel->setText(
+        tr("%n package(s) will be updated. ", "", updated)
+        +
+        tr("%n of these updates are security-related.", "", securityRelated)
+    );
     
     ui->installButton->setEnabled(installEnabled);
 }

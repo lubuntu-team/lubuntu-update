@@ -9,3 +9,7 @@ Version=0.1
 Categories=System;Settings;
 Keywords=upgrade;update
 Terminal=false
+
+Name[fr]=Mises à jour Lubuntu
+GenericName[fr]=Mises à jour Lubuntu
+Comment[fr]=Consulter les mises à jour disponibles et optionnellement les installer
