@@ -1,11 +1,25 @@
 [Desktop Entry]
 Exec=/usr/bin/lubuntu-update
 Name=Lubuntu Update
+Name[es]=Actualización de Lubuntu
+Name[gl]=Actualización de Lubuntu
+Name[eu]=Lubuntu berritzea
 GenericName=Lubuntu Update
+GenericName[es]=Actualización de Lubuntu
+GenericName[gl]=Actualización de Lubuntu
+GenericName[eu]=Lubuntu berritzea
 Comment=View available updates and optionally install them
+Comment[es]=Ver las actualizaciones disponibles e instalarlas opcionalmente
+Comment[gl]=Ver as actualizacións dispoñibles e instala-las opcionalmente
+Comment[eu]=Ikusi eskuragarri dauden berritzeak eta instalatu aukeran
 Icon=system-software-update
 Type=Application
 Version=0.1
 Categories=System;Settings;
 Keywords=upgrade;update
+Keywords[es]=actualización;actualizar;upgrade
+Keywords[gl]=actualización;actualizar;upgrade
+Keywords[eu]=berritze;eguneratze;upgrade
 Terminal=false
+
+

@@ -15,6 +15,11 @@ set(TS_FILES
 	src/translations/lubuntu-update_en_US.ts
 	src/translations/lubuntu-update_es_ES.ts
 	src/translations/lubuntu-update_zh_CN.ts
+	src/translations/lubuntu-update_eu.ts
+        src/translations/lubuntu-update_gl.ts
+        src/translations/lubuntu-update_fr_FR.ts
+
+
 )
 
 set(PROJECT_SOURCES
